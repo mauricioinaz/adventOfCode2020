@@ -26,14 +26,14 @@ def get_valid_password_count(input):
 def get_valid_password_count_pt2(input):
     valid_password_count = 0
     for row in input:
-        # cleanup
+        # cleanup and fix index numbers
         pos_1, pos_2, letter, pswd = extract_data(row)
         pos_1 -= 1
         pos_2 -= 1
         # validation
         valid_1 = pswd[pos_1] == letter
         valid_2 = pswd[pos_2] == letter
-        if (valid_1 and not(valid_2)) or (valid_2 and not(valid_1)):
+        if bool(valid_1) ^ bool(valid_2):  # XOR
             valid_password_count += 1
 
     return valid_password_count
