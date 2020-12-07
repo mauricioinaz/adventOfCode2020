@@ -14,6 +14,7 @@ def extract_bag_rules(data):
     return rules
 
 
+# PART 1
 def check_rule(rule, all_rules):
     if not all_rules[rule]:
         return False
@@ -23,7 +24,6 @@ def check_rule(rule, all_rules):
         return any([check_rule(rl, all_rules) for rl in all_rules[rule][0]])
 
 
-# PART 1
 def possible_bags(data):
     all_rules = extract_bag_rules(data)
     carry_gold_count = 0
@@ -32,13 +32,26 @@ def possible_bags(data):
     return carry_gold_count
 
 
+# PART 2
+def count_bags(rule, all_rules):
+    if not all_rules[rule]:
+        return 1
+    else:
+        return sum([count_bags(rl, all_rules)*int(mlt) for rl, mlt in zip(*all_rules[rule])])+1
+
+
+def ammount_of_bags(data):
+    all_rules = extract_bag_rules(data)
+    return count_bags('shiny gold', all_rules) - 1
+
+
 def main():
     puzzle_input = list(open('input.txt', 'r'))
     data = [row[:-2] for row in puzzle_input]
     print('Part ONE')
     print(f'{possible_bags(data)}')
-    # print('Part TWO')
-    # print(f'{find_groups_2(data)}')
+    print('Part TWO')
+    print(f'{ammount_of_bags(data)}')
 
 
 if __name__ == "__main__":
