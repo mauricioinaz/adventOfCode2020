@@ -2,10 +2,7 @@ def extract_commands(data):
     commands = []
     for row in data:
         operation, argument = row.split()
-        arg = int(argument[1:])
-        if argument[0] == '-':
-            arg *= -1
-        commands.append([operation, arg])
+        commands.append([operation, int(argument)])
     return commands
 
 
