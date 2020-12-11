@@ -17,6 +17,119 @@ def count_adjacents(i, j, seats):
     return adjacents
 
 
+def count_seable_adjacents(i, j, seats):
+    adjacents = 0
+    # up
+    y = i - 1
+    x = j
+    viewing = FLOOR
+    while y > 0 and viewing == FLOOR:
+        viewing = seats[y][x]
+        if viewing == OCCUPIED:
+            adjacents += 1
+            break
+        elif viewing == EMPTY:
+            break
+        y -= 1
+
+    # down
+    y = i + 1
+    x = j
+    viewing = FLOOR
+    while y < len(seats) and viewing == FLOOR:
+        viewing = seats[y][x]
+        if viewing == OCCUPIED:
+            adjacents += 1
+            break
+        elif viewing == EMPTY:
+            break
+        y += 1
+
+    # left
+    y = i
+    x = j - 1
+    viewing = FLOOR
+    while x > 0 and viewing == FLOOR:
+        viewing = seats[y][x]
+        if viewing == OCCUPIED:
+            adjacents += 1
+            break
+        elif viewing == EMPTY:
+            break
+        x -= 1
+
+    # right
+    y = i
+    x = j + 1
+    viewing = FLOOR
+    while x < len(seats[0]) and viewing == FLOOR:
+        viewing = seats[y][x]
+        if viewing == OCCUPIED:
+            adjacents += 1
+            break
+        elif viewing == EMPTY:
+            break
+        x += 1
+
+    # up-left
+    y = i - 1
+    x = j - 1
+    viewing = FLOOR
+    while x > 0 and y > 0 and viewing == FLOOR:
+        viewing = seats[y][x]
+        if viewing == OCCUPIED:
+            adjacents += 1
+            break
+        elif viewing == EMPTY:
+            break
+        x -= 1
+        y -= 1
+
+    # up-right
+    y = i - 1
+    x = j + 1
+    viewing = FLOOR
+    while x < len(seats[0]) and y > 0 and viewing == FLOOR:
+        viewing = seats[y][x]
+        if viewing == OCCUPIED:
+            adjacents += 1
+            break
+        elif viewing == EMPTY:
+            break
+        x += 1
+        y -= 1
+
+    # down-left
+    y = i + 1
+    x = j - 1
+    viewing = FLOOR
+    while x > 0 and y < len(seats) and viewing == FLOOR:
+        viewing = seats[y][x]
+        if viewing == OCCUPIED:
+            adjacents += 1
+            break
+        elif viewing == EMPTY:
+            break
+        x -= 1
+        y += 1
+
+    # down-right
+    y = i + 1
+    x = j + 1
+    viewing = FLOOR
+    while x < len(seats[0]) and y < len(seats) and viewing == FLOOR:
+        viewing = seats[y][x]
+        if viewing == OCCUPIED:
+            adjacents += 1
+            break
+        elif viewing == EMPTY:
+            break
+        x += 1
+        y += 1
+
+    return adjacents
+
+
 # check if boat seatings are equal
 def boats_equal(old, new):
     if len(old) != len(new):
@@ -47,7 +160,7 @@ def copy_boat(seats):
 
 
 # PART 1
-def occupied_seats(seats):
+def occupied_seats(seats, can_see=False):
     # Expand floor rows and columns for easier operations
     seats.insert(0, [FLOOR] * len(seats[0]))
     seats.append([FLOOR] * len(seats[0]))
@@ -58,30 +171,31 @@ def occupied_seats(seats):
     # WAIT UNTIL STABILIZED SEATS
     new_seats = copy_boat(seats)
     old_seats = [[]]
+    occupied_limit = 5 if can_see else 4
     ctr = 0  # Used to avoid an infinite loop
-    while not boats_equal(old_seats, new_seats) and ctr < 300:
+    loop_limit = 300
+    while not boats_equal(old_seats, new_seats) and ctr < loop_limit:
         old_seats = copy_boat(new_seats)
         new_seats = copy_boat(seats)
         for i in range(1, len(seats)-1):
             for j in range(1, len(seats[0])-1):
                 current_seat = old_seats[i][j]
                 if current_seat == EMPTY or current_seat == OCCUPIED:
-                    adjacents = count_adjacents(i, j, old_seats)
-                    # print(f'{i=} {j=} {current_seat} {adjacents = }')
+                    if can_see:
+                        adjacents = count_seable_adjacents(i, j, old_seats)
+                    else:
+                        adjacents = count_adjacents(i, j, old_seats)
                     if current_seat == EMPTY and adjacents == 0:
                         new_seats[i][j] = OCCUPIED
-                    elif current_seat == OCCUPIED and adjacents >= 4:
+                    elif current_seat == OCCUPIED and adjacents >= occupied_limit:
                         new_seats[i][j] = EMPTY
                     else:
                         new_seats[i][j] = current_seat
+
         ctr += 1
 
-        # print_seats(old_seats, 'OLD_SEATS')
-        # print_seats(new_seats, 'NEW_SEATS')
-        # break
-
-    if ctr >= 300:
-        print(f'Exited with INFINITE LOOP')
+    if ctr >= loop_limit:
+        print(f'Exited with {loop_limit =}')
         return None
 
     # FINAL COUNT OF OCCUPIED SEATS
@@ -93,18 +207,13 @@ def occupied_seats(seats):
     return seats_count
 
 
-# # PART 2
-# def encription_weakness(data, number):
-#     pass
-
-
 def main():
     puzzle_input = list(open('input.txt', 'r'))
     data = [list(row.strip()) for row in puzzle_input]
     print('Part ONE')
     print(f'{occupied_seats(data)}')
-    # print('Part TWO')
-    # print(f'{encription_weakness(data, wrong_number)}')
+    print('Part TWO')
+    print(f'{occupied_seats(data, True)}')
 
 
 if __name__ == "__main__":
