@@ -3,7 +3,9 @@ EMPTY = 'L'
 OCCUPIED = '#'
 
 
-def count_adjacents(i, j, seats):
+def count_adjacents(i, j, seats, can_see=False):
+    if can_see:
+        return count_seable_adjacents(i, j, seats)
     # previous row
     adjacents = sum([1 for s in seats[i-1][j-1:j+2] if s == OCCUPIED])
     # left
@@ -17,115 +19,48 @@ def count_adjacents(i, j, seats):
     return adjacents
 
 
+def check_limit(numb, limit):
+    if limit == 0:
+        return numb > limit
+    return numb < limit
+
+
+def seable_seat(seats, y, x, lim_y, lim_x, up, right):
+    viewing = FLOOR
+    while check_limit(x, lim_x) and check_limit(y, lim_y) and viewing == FLOOR:
+        viewing = seats[y][x]
+        if viewing == OCCUPIED:
+            return 1
+        elif viewing == EMPTY:
+            return 0
+        y += up
+        x += right
+
+    return 0
+
+
 def count_seable_adjacents(i, j, seats):
     adjacents = 0
-    # up
-    y = i - 1
-    x = j
-    viewing = FLOOR
-    while y > 0 and viewing == FLOOR:
-        viewing = seats[y][x]
-        if viewing == OCCUPIED:
-            adjacents += 1
-            break
-        elif viewing == EMPTY:
-            break
-        y -= 1
 
+    # up
+    adjacents += seable_seat(seats, i-1, j, 0, 0, -1, 0)
     # down
-    y = i + 1
-    x = j
-    viewing = FLOOR
-    while y < len(seats) and viewing == FLOOR:
-        viewing = seats[y][x]
-        if viewing == OCCUPIED:
-            adjacents += 1
-            break
-        elif viewing == EMPTY:
-            break
-        y += 1
+    adjacents += seable_seat(seats, i+1, j, len(seats), 0, 1, 0)
 
     # left
-    y = i
-    x = j - 1
-    viewing = FLOOR
-    while x > 0 and viewing == FLOOR:
-        viewing = seats[y][x]
-        if viewing == OCCUPIED:
-            adjacents += 1
-            break
-        elif viewing == EMPTY:
-            break
-        x -= 1
-
+    adjacents += seable_seat(seats, i, j-1, 0, 0, 0, -1)
     # right
-    y = i
-    x = j + 1
-    viewing = FLOOR
-    while x < len(seats[0]) and viewing == FLOOR:
-        viewing = seats[y][x]
-        if viewing == OCCUPIED:
-            adjacents += 1
-            break
-        elif viewing == EMPTY:
-            break
-        x += 1
+    adjacents += seable_seat(seats, i, j+1, 0, len(seats[0]), 0, +1)
 
     # up-left
-    y = i - 1
-    x = j - 1
-    viewing = FLOOR
-    while x > 0 and y > 0 and viewing == FLOOR:
-        viewing = seats[y][x]
-        if viewing == OCCUPIED:
-            adjacents += 1
-            break
-        elif viewing == EMPTY:
-            break
-        x -= 1
-        y -= 1
-
+    adjacents += seable_seat(seats, i-1, j-1, 0, 0, -1, -1)
     # up-right
-    y = i - 1
-    x = j + 1
-    viewing = FLOOR
-    while x < len(seats[0]) and y > 0 and viewing == FLOOR:
-        viewing = seats[y][x]
-        if viewing == OCCUPIED:
-            adjacents += 1
-            break
-        elif viewing == EMPTY:
-            break
-        x += 1
-        y -= 1
+    adjacents += seable_seat(seats, i-1, j+1, 0, len(seats[0]), -1, 1)
 
     # down-left
-    y = i + 1
-    x = j - 1
-    viewing = FLOOR
-    while x > 0 and y < len(seats) and viewing == FLOOR:
-        viewing = seats[y][x]
-        if viewing == OCCUPIED:
-            adjacents += 1
-            break
-        elif viewing == EMPTY:
-            break
-        x -= 1
-        y += 1
-
+    adjacents += seable_seat(seats, i+1, j-1, len(seats), 0, 1, -1)
     # down-right
-    y = i + 1
-    x = j + 1
-    viewing = FLOOR
-    while x < len(seats[0]) and y < len(seats) and viewing == FLOOR:
-        viewing = seats[y][x]
-        if viewing == OCCUPIED:
-            adjacents += 1
-            break
-        elif viewing == EMPTY:
-            break
-        x += 1
-        y += 1
+    adjacents += seable_seat(seats, i+1, j+1, len(seats), len(seats[0]), 1, 1)
 
     return adjacents
 
@@ -159,7 +94,7 @@ def copy_boat(seats):
     return new_boat
 
 
-# PART 1
+# PART 1 and 2
 def occupied_seats(seats, can_see=False):
     # Expand floor rows and columns for easier operations
     seats.insert(0, [FLOOR] * len(seats[0]))
@@ -181,10 +116,7 @@ def occupied_seats(seats, can_see=False):
             for j in range(1, len(seats[0])-1):
                 current_seat = old_seats[i][j]
                 if current_seat == EMPTY or current_seat == OCCUPIED:
-                    if can_see:
-                        adjacents = count_seable_adjacents(i, j, old_seats)
-                    else:
-                        adjacents = count_adjacents(i, j, old_seats)
+                    adjacents = count_adjacents(i, j, old_seats, can_see)
                     if current_seat == EMPTY and adjacents == 0:
                         new_seats[i][j] = OCCUPIED
                     elif current_seat == OCCUPIED and adjacents >= occupied_limit:
