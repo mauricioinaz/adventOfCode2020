@@ -60,24 +60,24 @@ def count_seable_adjacents(i, j, seats):
     adjacents = 0
 
     # up
-    adjacents += seable_seat(seats, i-1, j, 0, 0, -1, 0)
+    adjacents += seable_seat(seats, i, j, 0, 0, -1, 0)
     # down
-    adjacents += seable_seat(seats, i+1, j, len(seats), 0, 1, 0)
+    adjacents += seable_seat(seats, i, j, len(seats), 0, 1, 0)
 
     # left
-    adjacents += seable_seat(seats, i, j-1, 0, 0, 0, -1)
+    adjacents += seable_seat(seats, i, j, 0, 0, 0, -1)
     # right
-    adjacents += seable_seat(seats, i, j+1, 0, len(seats[0]), 0, +1)
+    adjacents += seable_seat(seats, i, j, 0, len(seats[0]), 0, +1)
 
     # up-left
-    adjacents += seable_seat(seats, i-1, j-1, 0, 0, -1, -1)
+    adjacents += seable_seat(seats, i, j, 0, 0, -1, -1)
     # up-right
-    adjacents += seable_seat(seats, i-1, j+1, 0, len(seats[0]), -1, 1)
+    adjacents += seable_seat(seats, i, j, 0, len(seats[0]), -1, 1)
 
     # down-left
-    adjacents += seable_seat(seats, i+1, j-1, len(seats), 0, 1, -1)
+    adjacents += seable_seat(seats, i, j, len(seats), 0, 1, -1)
     # down-right
-    adjacents += seable_seat(seats, i+1, j+1, len(seats), len(seats[0]), 1, 1)
+    adjacents += seable_seat(seats, i, j, len(seats), len(seats[0]), 1, 1)
 
     return adjacents
 
@@ -90,6 +90,8 @@ def check_limit(numb, limit):
 
 def seable_seat(seats, y, x, lim_y, lim_x, up, right):
     viewing = FLOOR
+    y += up
+    x += right
     while check_limit(x, lim_x) and check_limit(y, lim_y) and viewing == FLOOR:
         viewing = seats[y][x]
         if viewing == OCCUPIED:
