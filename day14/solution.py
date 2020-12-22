@@ -59,9 +59,9 @@ def get_version2(data):
 def get_floating_addresses(memory, float_mask):
     floats = float_mask.count('X')
     masks = []
-    for x in range(2**floats):
-        # Binary representation of X, inversed, in list
-        number = list(bin(x)[2:].zfill(floats)[::-1])
+    for number in range(2**floats):
+        # Binary representation of number, inversed, in a list
+        number = list(bin(number)[2:].zfill(floats)[::-1])
         tmp_mask = ['0' for _ in range(36)]
         for ind, y in enumerate(float_mask):
             if y == 'X':
