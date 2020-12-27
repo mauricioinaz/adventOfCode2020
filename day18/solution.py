@@ -11,7 +11,7 @@ def get_results(data, adv=False):
         numbers = [x for x in line if x != ' ']
         numbers = [int(x) if x.isnumeric() else x for x in numbers]
         numbers = flatten_numbers(numbers, adv)
-        print(numbers[0])
+        # print(numbers[0])
         results.append(numbers[0])
     return sum(results)
 
@@ -20,10 +20,11 @@ def flatten_numbers(numbers, adv):
     if '(' not in numbers:
         return [new_math(numbers, adv)]
     else:
+        # find matching parenthesis indexes
+        # and split list
         open = 0
         open_ind = None
         close_ind = None
-        # find matching parenthesis indexes
         for i, n in enumerate(numbers):
             if n == '(':
                 open += 1
@@ -61,7 +62,7 @@ def new_math(numbers, adv):
 
 
 # PART 2
-# make all sums first, than all multiplications
+# make all sums first, then all multiplications
 def new_adv_math(numbers):
     n = 0
     multipliers = []
