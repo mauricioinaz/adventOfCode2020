@@ -81,11 +81,6 @@ def new_adv_math(numbers):
     return result
 
 
-# PART 2
-def part_2(data):
-    pass
-
-
 def main():
     data = list(open('input.txt', 'r'))
     print('Part ONE')
