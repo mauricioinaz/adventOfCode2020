@@ -9,8 +9,8 @@ def get_data(data):
 
         key, values = row.split(':')
         key = int(key)
-        # values = [x for x in values if x != ' ']
         values = values.strip().split(' ')
+
         # single letter rule as STRING
         if values == ['"a"'] or values == ['"b"']:
             values = values[0][1]
@@ -39,6 +39,7 @@ def get_results(data):
     possibilities = get_possibilites(rules, rules[0])
     valid_options = get_all_possible(possibilities)
     checked = [msg for msg in messages if msg in valid_options]
+    print(checked)
     return len(checked)
 
 
@@ -46,11 +47,10 @@ def get_possibilites(rules, current_rule, rec=[]):
     if type(current_rule) == str:
         return current_rule
     elif type(current_rule) == list:
-        return [get_possibilites(rules, rules[rl], [*rec, current_rule]) for rl in current_rule]
+        return [get_possibilites(rules, rules[rl]) for rl in current_rule]
     elif type(current_rule) == tuple:
-        return ([get_possibilites(rules, rules[rl], [*rec, current_rule]) for rl in current_rule[0]], \
-                [get_possibilites(rules, rules[rl], [*rec, current_rule]) for rl in current_rule[1]])
-
+        return ([get_possibilites(rules, rules[rl]) for rl in current_rule[0]],
+                [get_possibilites(rules, rules[rl]) for rl in current_rule[1]])
 
 def get_all_possible(current, options=['']):
     if type(current) == str:
@@ -63,30 +63,66 @@ def get_all_possible(current, options=['']):
         return get_all_possible(current[0], options) + get_all_possible(current[1], options)
 
 
-# # PART 2
-# def get_results_2(data):
-#     rules, messages = get_data(data)
-#     print(rules, '\n')
-#     rules[8] = ([42], [42, 8])
-#     rules[11] = ([42, 31], [42, 11, 31])
-#     possibilities = get_possibilites(rules, rules[0])
-#     valid_options = get_all_possible(possibilities)
-#     print(f'valid_options {len(valid_options)}\n ')
-#     print(f'is set {len(valid_options) == len(set(valid_options))} {len(valid_options)=}')
-#     print(f'{len(max(valid_options))=} {len(min(valid_options))=}')
-#     print(f'{len(max(messages))=} {len(min(messages))=}\n')
-#     checked = [msg for msg in messages if msg in valid_options]
-#     print('checked')
-#     print(checked,'\n')
-#     return len(checked)
+# PART 2
+def get_results_2(data):
+    rules, messages = get_data(data)
+    # rules[8] = ([42], [42, 8])
+    # rules[11] = ([42, 31], [42, 11, 31])
+    print(rules)
+    checked = []
+    for msg in messages:
+        val, chr = validate_char(rules, rules[0], msg)
+        print(f'{msg} was {val} ended at {chr} ? {len(msg)}')
+        if val:
+            checked.append(val)
+    # possibilities = get_possibilites(rules, rules[0])
+    # print(possibilities)
+    # valid_options = get_all_possible(possibilities)
+    # print(f'valid_options {len(valid_options)}\n ')
+    # print(f'is set {len(valid_options) == len(set(valid_options))} {len(valid_options)=}')
+    # print(f'{len(max(valid_options))=} {len(min(valid_options))=}')
+    # print(f'{len(max(messages))=} {len(min(messages))=}\n')
+    # checked = [msg for msg in messages if msg in valid_options]
+    print('checked')
+    print(checked,'\n')
+    return len(checked)
+
+
+def validate_word(rules, curr_rule, word):
+    pass
+
+
+def validate_char(rules, curr_rule, word, curr_char=0):
+    print(curr_rule, word, curr_char)
+# try:
+    if type(curr_rule) == str:
+        return curr_rule == word[curr_char], curr_char
+    elif type(curr_rule) == list:
+        chars = []
+        for i, rl in enumerate(curr_rule):
+            val, curr_char = validate_char(rules, rules[rl], word, curr_char+i)
+            chars.append(val)
+
+        return all(chars), curr_char
+    elif type(curr_rule) == tuple:
+        branch = []
+        for curr in curr_rule:
+            chars = []
+            for i, rl in enumerate(curr):
+                val, curr_char = validate_char(rules, rules[rl], word, curr_char+i)
+                chars.append(val)
+            branch.append(all(chars))
+        return any(branch), curr_char+i
+    # except IndexError:
+    #     return False, curr_char
 
 
 def main():
-    data = list(open('input.txt', 'r'))
+    data = list(open('test1.txt', 'r'))
     print('Part ONE')
     print(f'{get_results(data)}')
-    # print('Part TWO')
-    # print(f'{get_results_2(data)}')
+    print('Part TWO')
+    print(f'{get_results_2(data)}')
 
 
 if __name__ == "__main__":
