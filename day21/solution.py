@@ -1,6 +1,7 @@
 INGREDIENTS = 0
 ALLERGENS = 1
 
+
 def get_data(data):
     foods = {}
     for i, line in enumerate(data):
@@ -35,10 +36,10 @@ def find_no_allergen(data):
     # find ingredient correlations/intersection per allergen appearance
     allergen_results = {}
     for k, lines in allergen_data.items():
-        options = [foods[line][0] for line in lines]
+        options = [foods[line][INGREDIENTS] for line in lines]
         result = set(options[0])
         for opt in options[1:]:
-            result = result & set(opt)
+            result &= set(opt)
         allergen_results[k] = result
 
     # TODO:  duplicated code with day 16
@@ -53,10 +54,10 @@ def find_no_allergen(data):
     # sets of ingredients with/without allergen
     ingr_with_allergen = set()
     for ingrs in allergen_results.values():
-        ingr_with_allergen = ingr_with_allergen | ingrs
+        ingr_with_allergen |= ingrs
     ingr_without_allergen = set()
     for ingrs in foods.values():
-        ingr_without_allergen = ingr_without_allergen | set(ingrs[0]) - ingr_with_allergen
+        ingr_without_allergen |= set(ingrs[0]) - ingr_with_allergen
 
     # count occurrances of without-allergen ingredients
     count = 0
