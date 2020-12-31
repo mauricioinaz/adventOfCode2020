@@ -1,3 +1,6 @@
+INGREDIENTS = 0
+ALLERGENS = 1
+
 def get_data(data):
     foods = {}
     for i, line in enumerate(data):
@@ -18,15 +21,15 @@ def find_no_allergen(data):
 
     # Set of allergens
     allergens = set()
-    for alrg in foods.values():
-        allergens.update(alrg[1])
+    for line in foods.values():
+        allergens.update(line[ALLERGENS])
 
     # appearances of allergen per line
     allergen_data = {}
     for al in allergens:
         allergen_data[al] = []
-        for k, alrg in foods.items():
-            if al in alrg[1]:
+        for k, line in foods.items():
+            if al in line[ALLERGENS]:
                 allergen_data[al].append(k)
 
     # find ingredient correlations/intersection per allergen appearance
@@ -57,8 +60,8 @@ def find_no_allergen(data):
 
     # count occurrances of without-allergen ingredients
     count = 0
-    for ings in foods.values():
-        count += sum([ings[0].count(ing) for ing in ingr_without_allergen])
+    for line in foods.values():
+        count += sum([line[INGREDIENTS].count(ing) for ing in ingr_without_allergen])
 
     return count, allergen_results
 
