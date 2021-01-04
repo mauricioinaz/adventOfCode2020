@@ -65,7 +65,9 @@ def lobby_in_time(grid, day_limit=100):
                     temp_grid[y][x] = tile
         grid = temp_grid
         day += 1
+        print(f'processed day {day}', end='\r')
 
+    print('\n')
     return sum([sum(y) for y in grid])
 
 
