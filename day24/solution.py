@@ -38,7 +38,7 @@ def get_flip_list(data):
 # PART 1
 def lobby_layout(data):
     flip_list = get_flip_list(data)
-    max_instructions = max([len(it) for it in flip_list])*2 + 1
+    max_instructions = max([len(it) for it in flip_list])*2 + 101  # 100 wiggle room for the 100 days lobby
     grid = [[WHITE for i in range(max_instructions)] for _ in range(max_instructions)]
     for flip_instructions in flip_list:
         x = y = max_instructions // 2
@@ -47,13 +47,49 @@ def lobby_layout(data):
             location = tuple(prev + step for prev, step in zip(location, HEX_COMPASS[instr]))
         grid[location[0]][location[1]] = not grid[location[0]][location[1]]  # flip color
 
+    return grid, sum([sum(y) for y in grid])
+
+
+def lobby_in_time(grid, day_limit=100):
+    day = 0
+    while day < day_limit:
+        temp_grid = [[WHITE for col in row] for row in grid]
+        for y, y_col in enumerate(grid):
+            for x, tile in enumerate(y_col):
+                neighbors = count_neighbors(y, x, grid)
+                if tile == BLACK and (neighbors == 0 or neighbors > 2):
+                    temp_grid[y][x] = WHITE
+                elif tile == WHITE and neighbors == 2:
+                    temp_grid[y][x] = BLACK
+                else:
+                    temp_grid[y][x] = tile
+        grid = temp_grid
+        day += 1
+
     return sum([sum(y) for y in grid])
+
+
+def count_neighbors(y, x, grid):
+    ctr = 0
+    for neighbor in HEX_COMPASS.values():
+        location = [prev + step for prev, step in zip((y, x), neighbor)]
+        try:
+            if grid[location[0]][location[1]]:
+                ctr += 1
+        except IndexError:
+            pass
+
+    return ctr
 
 
 def main():
     data = list(open('input.txt', 'r'))
     print('Part ONE')
-    print(f'{lobby_layout(data)}')
+    grid, grid_sum = lobby_layout(data)
+    print(f'{grid_sum}')
+
+    print('Part TWO')
+    print(f'{lobby_in_time(grid, 100)}')
 
 
 if __name__ == "__main__":
