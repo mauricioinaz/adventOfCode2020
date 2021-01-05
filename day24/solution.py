@@ -50,6 +50,7 @@ def lobby_layout(data):
     return grid, sum([sum(y) for y in grid])
 
 
+# PART 2
 def lobby_in_time(grid, day_limit=100):
     day = 0
     while day < day_limit:

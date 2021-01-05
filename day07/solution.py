@@ -1,3 +1,6 @@
+SHINY_GOLD = 'shiny gold'
+
+
 def extract_bag_rules(data):
     rules = {}
     for row in data:
@@ -15,15 +18,6 @@ def extract_bag_rules(data):
 
 
 # PART 1
-def check_rule(rule, all_rules):
-    if not all_rules[rule]:
-        return False
-    elif 'shiny gold' in all_rules[rule][0]:
-        return True
-    else:
-        return any([check_rule(rl, all_rules) for rl in all_rules[rule][0]])
-
-
 def possible_bags(data):
     all_rules = extract_bag_rules(data)
     carry_gold_count = 0
@@ -32,17 +26,25 @@ def possible_bags(data):
     return carry_gold_count
 
 
+def check_rule(rule, all_rules):
+    if not all_rules[rule]:
+        return False
+    elif SHINY_GOLD in all_rules[rule][0]:
+        return True
+    else:
+        return any([check_rule(rl, all_rules) for rl in all_rules[rule][0]])
+
+
 # PART 2
+def ammount_of_bags(data):
+    all_rules = extract_bag_rules(data)
+    return count_bags(SHINY_GOLD, all_rules) - 1
+
+
 def count_bags(rule, all_rules):
     if not all_rules[rule]:
         return 1
-    else:
-        return sum([count_bags(rl, all_rules)*int(mlt) for rl, mlt in zip(*all_rules[rule])])+1
-
-
-def ammount_of_bags(data):
-    all_rules = extract_bag_rules(data)
-    return count_bags('shiny gold', all_rules) - 1
+    return sum([count_bags(rl, all_rules)*int(mlt) for rl, mlt in zip(*all_rules[rule])]) + 1
 
 
 def main():
